@@ -1,0 +1,160 @@
+---
+title: "RF1_behavior"
+author: "CNDS"
+date: "June 12, 2019"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r load data, warning=FALSE, echo=FALSE}
+setwd("~/Projects/RF1/")
+
+nses <- 1
+nblock <- 4
+nmetrics <- length(c("CorrectTrials","#0back","#2back","acc0back","acc2back","avgRT0back","avgRT2back"))
+
+sumtbl <- matrix(0, nrow = (nses*nblock),ncol = nmetrics)
+
+file_ct = 1
+for (i_file in list.files(path = "~/Projects/RF1/")) {
+  #df <- readLines(i_file) #nback_test_5_5-C412-21_numeric.csv
+  #df <- df[-1] # remove first line (file path)
+  #df <- df[-1] # remove second line (this data contains editted... comment)
+  df <- read.csv(file = i_file, header = TRUE, stringsAsFactors = FALSE)
+  
+  # compute multi-visit accuracy
+  trials <- which(df$CorrectResp != 'NA')
+  df <- df[trials,]
+  
+  df.correct <- df[which(df$NBackImage1.RESP | df$NBackImage2.RESP == df$CorrectResp),]
+    sumtbl[file_ct,1] <- nrow(df.correct) # number of correct trials
+    sumtbl[file_ct,2] <- sum(df.correct$NbackLevel == 1) # number of correct, 0-back trials
+    sumtbl[file_ct,3] <- sum(df.correct$NbackLevel == 2) # number of correct, 2-back trials
+    
+    sumtbl[file_ct,4] <- sum(df.correct$NbackLevel == 1)/sum(df$NbackLevel == 1) #acc_0back
+    sumtbl[file_ct,5] <- sum(df.correct$NbackLevel == 2)/sum(df$NbackLevel == 2) #acc_2back
+  
+  # compute multi-visit reaction times  
+      a <- which(df.correct$NBackImage2.RT != 0)
+      for (i_trial in a) {
+        df.correct$NBackImage2.RT[i_trial] <- df.correct$NBackImage2.RT[i_trial]+250
+      }
+      tot_RTtime <- df.correct$NBackImage1.RT + df.correct$NBackImage2.RT
+    sumtbl[file_ct,6] <- mean(subset(tot_RTtime,df.correct$NbackLevel == 1)) #avgRT_0back
+    sumtbl[file_ct,7] <- mean(subset(tot_RTtime,df.correct$NbackLevel == 2)) #avgRT_2back
+    
+    file_ct = file_ct+1
+}
+
+  
+```
+
+# Data Table (legend below)
+```{r table, echo=FALSE}
+
+df.sumtbl <- as.data.frame(sumtbl) #row.names = c("Ses1_Blk1","Ses1_Blk2","Ses2_Blk1","Ses2_Blk2")
+colnames(df.sumtbl) <- c("trialscorr","trials0corr","trials2corr","ACC0Back","ACC2Back","avgRT0back","avgRT2back")
+Name <- c("Ses1_Blk1","Ses1_Blk2","Ses2_Blk1","Ses2_Blk2")
+df.sumtbl2 <- data.frame(Name,df.sumtbl)
+if ( file_ct < 4 ) {
+  df.sumtbl2[3:4,2:8] <- NA
+}
+
+#print(df.sumtbl)
+#knitr::kable(df.sumtbl, format="markdown")
+knitr::kable(df.sumtbl2, format="markdown")
+
+```
+  * trialscorr = number of trials correct
+  * trials0corr = number of trials correct, in 0-back condition
+  * trials2corr = number of trials correct, in 2-back condition
+  * ACC0back = task accuracy, in 0-back condition
+  * ACC2back = task accuracy, in 2-back condition
+  * avgRT0back = average Reaction Time (RT), in 0-back condition
+  * avgRT2back = average Reaction Time (RT), in 2-back condition
+
+# Plots
+```{r plots, echo=FALSE}
+# Accuracy, filtered by NbackLevel (0 or 2)
+ggplot(df.sumtbl) + geom_point(data = df.sumtbl,aes(x=rownames(df.sumtbl),y=ACC0Back,color = "0Back")) + geom_point(data = df.sumtbl,aes(x=rownames(df.sumtbl),y=ACC2Back,color = "2Back")) + labs(title="RF1 C263, Nback Accuracy", x="Visit", y="Accuracy", color="Nback:") + ylim(0,1) + geom_hline(yintercept=0.25, linetype="dashed")
+
+# RT, filtered by NbackLevel (0 or 2)
+ggplot(df.sumtbl) + geom_point(data = df.sumtbl,aes(x=rownames(df.sumtbl),y=avgRT0back,color = "0Back")) + geom_point(data = df.sumtbl,aes(x=rownames(df.sumtbl),y=avgRT2back,color = "2Back")) + labs(title="RF1 C263, avgRT on Correct Trials", x="Visit", y="RT", color="Nback:")
+
+```
+
+```{r evaluating effect of tms stim, echo=FALSE}
+
+setwd("~/Projects/RF1/")
+
+file_ct=1
+ct=1
+for (i_file in list.files(path = "~/Projects/RF1/C263/numeric")) {
+  df <- read.csv(file = i_file, header = TRUE, stringsAsFactors = FALSE)
+
+  # compute multi-visit accuracy
+  trials <- which(df$CorrectResp != 'NA')
+  df <- df[trials,]
+  
+  # create summary columns
+  TrialCount <- rep(0,nrow(df));
+  NBackImageAll.RESP <- rep(0,nrow(df));
+  NBackImageAll.RT <- rep(0,nrow(df));
+  NBackImageAll.ACC <- rep(0,nrow(df));
+  # fill summary columns
+  #ct=1
+  for (i_trial in 1:nrow(df)) {
+  if (!is.na(df$NBackImage1.RESP[i_trial])) {
+      NBackImageAll.RESP[i_trial] <- df$NBackImage1.RESP[i_trial]
+      NBackImageAll.RT[i_trial] <- df$NBackImage1.RT[i_trial]
+    } else if (!is.na(df$NBackImage2.RESP[i_trial])) {
+      NBackImageAll.RESP[i_trial] <- df$NBackImage2.RESP[i_trial]
+      NBackImageAll.RT[i_trial] <- df$NBackImage2.RT[i_trial]+250 #NBackImage2 logged 250ms after NbackImage1 (ie t0)
+    }
+  
+  if (NBackImageAll.RESP[i_trial] == df$CorrectResp[i_trial]) {
+    NBackImageAll.ACC[i_trial] = 1
+    } else {
+      NBackImageAll.ACC[i_trial] = 0
+    }
+    
+  TrialCount[i_trial] = ct
+  ct=ct+1
+  
+  }
+  # add columns to data
+  df.updated <- data.frame(df,TrialCount,NBackImageAll.RESP,NBackImageAll.RT,NBackImageAll.ACC)
+  if (ct == 301 & file_ct == 1) {
+    df2 <- df.updated
+  }
+  file_ct=file_ct+1
+}
+
+df_final <- rbind(df2,df.updated)
+```
+## ses-tms1 visit, all trials
+Dashed line seperates before (left, first 300) and after (right, last 300) iTBS stimulation
+```{r plotting effect of tms stim, echo=FALSE}  
+  ## plot1
+  ggplot(df_final, aes(x=TrialCount, y=NBackImageAll.RESP, color=NBackImageAll.ACC)) + geom_point(size = 2) + labs(title="Response x Trial, by Accuracy", x="Trials", y="Response", color="Accuracy:") + geom_vline(xintercept=300, linetype="solid") + geom_vline(xintercept=150, linetype="dashed") + geom_vline(xintercept=450, linetype="dashed")
+  ## plot2
+  ggplot(df_final, aes(x=TrialCount, y=TMSStim, color=NBackImageAll.ACC)) + geom_point(size = 2) + labs(title="TMS Stim x Trial, colored by Accuracy", x="Trials", y="TMS: on (0) or off (1)", color="Accuracy:") + geom_vline(xintercept=300, linetype="solid") + geom_vline(xintercept=150, linetype="dashed") + geom_vline(xintercept=450, linetype="dashed")
+  ## plot3
+  ggplot(df_final, aes(x=TrialCount, y=NBackImageAll.RT, color=TMSStim)) + geom_point(size = 2) + labs(title="RT x Trial, by TMSStim", x="Trials", y="Reaction Time", color="TMSStim on/off:") + geom_vline(xintercept=300, linetype="solid") + geom_vline(xintercept=150, linetype="dashed") + geom_vline(xintercept=450, linetype="dashed")
+  ## plot4
+  ggplot(df_final, aes(x=TrialCount, y=NBackImageAll.RT, color=NBackImageAll.ACC)) + geom_point(size = 2) + labs(title="RT x Trial, by Accuracy", x="Trials", y="Reaction Time", color="Accuracy:") + geom_vline(xintercept=300, linetype="solid") + geom_vline(xintercept=150, linetype="dashed") + geom_vline(xintercept=450, linetype="dashed")
+  
+
+
+```
+
