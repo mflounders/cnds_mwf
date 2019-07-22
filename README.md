@@ -1,10 +1,11 @@
 # CNDS utilities and scripts 
 
-## RF1 NCT
-- single subject behavior plots
-## BIDS-fMRIPREP-XCP Pipeline
+## study-specific
+- RF1 NCT, single subject behavior plots
+## pipeline
+- BIDS-fmriprep-XCP 
 - TBA
-## General:
+## utilities:
 - ANTsct status utilities
 - new study organization
 - current study summary reports
