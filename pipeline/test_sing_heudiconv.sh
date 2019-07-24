@@ -44,4 +44,4 @@ session=$2
 heuristic=$3 
 outputdir=$4 
 
-/share/apps/singularity/2.5.1/bin/singularity run -B /data/jux/oathes_group/:/mnt -e /data/joy/BBL/applications/heudiconv/heudiconv-latest.simg -d /mnt/studies/RF1/MRI/raw/{subject}/{session}/RawDicoms/*dcm -s $subject -ss $session -f /mnt/studies/RF1/github_clone/brainrf1/heuristics/$heuristic -c dcm2niix -b -o /mnt/sandbox/Testing_heudiconv/$outputdir
+/share/apps/singularity/2.5.1/bin/singularity run -B /data/jux/oathes_group/:/mnt -e /data/jag/cnds/applications/heudiconv/heudiconv-0.5.4.simg -d /mnt/studies/RF1/MRI/raw/{subject}/{session}/RawDicoms/*dcm -s $subject -ss $session -f /mnt/studies/RF1/github_clone/brainrf1/heuristics/$heuristic -c dcm2niix -b -o /mnt/sandbox/Testing_heudiconv/$outputdir
