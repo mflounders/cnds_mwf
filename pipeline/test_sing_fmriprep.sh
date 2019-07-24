@@ -14,8 +14,8 @@ NC='\033[0m'
 test_sing_fmriprep.sh
 	
 	Description: Wrapper function that submits a subject to fmriprep as an SGE jobs 
-	Author: MWF, Last updated: 20190715
-	Status: TEST SCRIPT, requires customization for your test
+	Author: MWF, Last updated: 20190724
+	Status: Stable, for testing
 
 	${BLUE}[Template call]${NC}
 		./test_sing_fmriprep.sh [subject_list] [settings]
