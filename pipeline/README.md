@@ -1,7 +1,7 @@
 # Singularity pipeline
 
 ## README: Analysis Walkthrough (heudiconv, fmriprep, and XCP - with singularity)
-last updated: 20190724
+last updated: 20190724 | [Singularity Workflow PPT](https://docs.google.com/presentation/d/1rtNLlrjr8aAFnZ08k3dGDQKSF4N3f_Gm2MQ5hoe5ubg/edit?usp=sharing)
 
 ### Initial Set-up:
 1. make a directory named data in your home directory, e.g. /home/mflounders/data
