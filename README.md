@@ -3,9 +3,9 @@
 ## study-specific
 - RF1 NCT, single subject behavior plots
 ## pipeline
-- BIDS-fmriprep-XCP 
-- TBA
+- Singularity heudiconv-fmriprep-XCP 
+- rsMRI fc targets
 ## utilities:
-- ANTsct status utilities
-- new study organization
-- current study summary reports
+- ANTsct-status utility
+- new study organization and computing study summary reports
+- fcmap averaging and transforms 
