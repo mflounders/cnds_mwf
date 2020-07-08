@@ -10,7 +10,7 @@ def create_key(template, outtype=('nii.gz',), annotation_classes=None):
 
 
 # **********************************************************************************
-# Baseline session
+# Baseline session: Key Creation
 
 ## Field Map
 fmap_se_AP = create_key(
@@ -29,7 +29,6 @@ rest_PA_sbref_run1 = create_key(
 	'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-PA_run-01_sbref')
 rest_PA_run1 = create_key(
 	'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-PA_run-01_bold')
-
 # run2
 rest_AP_sbref_run2 = create_key(
 	'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-AP_run-02_sbref')
@@ -39,7 +38,6 @@ rest_PA_sbref_run2 = create_key(
 	'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-PA_run-02_sbref')
 rest_PA_run2 = create_key(
 	'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-PA_run-02_bold')
-
 # run3
 rest_AP_sbref_run3 = create_key(
 	'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-AP_run-03_sbref')
@@ -50,6 +48,7 @@ rest_PA_sbref_run3 = create_key(
 rest_PA_run3 = create_key(
 	'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-PA_run-03_bold')
 
+
 ### nback, single run
 nback_02 = create_key(
 	'sub-{subject}/{session}/func/sub-{subject}_{session}_task-nback02_run-0{item:01d}_bold')
@@ -58,6 +57,9 @@ nback_02 = create_key(
 ## Anatomical scans
 t1w = create_key(
 	'sub-{subject}/{session}/anat/sub-{subject}_{session}_acq-MPR_T1w')
+t2w = create_key(
+	'sub-{subject}/{session}/anat/sub-{subject}_{session}_T2w')
+
 
 ## B0 fmaps
 fmap_phPA_baseline = create_key(
@@ -65,27 +67,20 @@ fmap_phPA_baseline = create_key(
 fmap_magPA_baseline = create_key(
 	'sub-{subject}/{session}/fmap/sub-{subject}_{session}_magnitude{item}')
 
+
 ## DTI scan
 dti = create_key(
 	'sub-{subject}/{session}/dwi/sub-{subject}_{session}_acq-DTIb1000mb2dir64_dwi')
 
+
 ## ASL Scans
 mean_perf = create_key(
-	'sub-{subject}/{session}/asl/sub-{subject}_{session}_acq-spiralv20pf68accel1d_CBF')
+	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_acq-spiralv20pf68accel1d_DELTAM')
 raw_asl = create_key(
-	'sub-{subject}/{session}/asl/sub-{subject}_{session}_acq-spiralv20pf68accel1d_asl')
+	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_acq-spiralv20pf68accel1d_asl')
 m0 = create_key(
-	'sub-{subject}/{session}/asl/sub-{subject}_{session}_acq-spiralv20pf68accel1d_MZeroScan')
+	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_acq-spiralv20pf68accel1d_MoScan')
 
-# DSI session
-
-## Localizer
-#anat_scout_DSI = create_key(
-#	'sub-{subject}/{session}/anat/sub-{subject}_{session}_run-0{item:01d}_scout')
-
-## Anatomical scans
-t2w = create_key(
-	'sub-{subject}/{session}/anat/sub-{subject}_{session}_T2w')
 
 ## DSI
 dsi_493dir = create_key(
@@ -168,9 +163,10 @@ def infotodict(seqinfo):
 		elif ("DTI_64dir_MB2" in s.protocol_name) or ("dwi_acq-multiband2dir64_dwi" in s.protocol_name):
 			info[dti].append(s.series_id)
 			
-		#if s.series_description.endswith('_M0'):
-			#info[m0].append(s.series_id) #Removed conversion of MZero to nifti. With current versions of
-			#dcm2niix, the M0 will not convert correctly (one slice is deleted, resulting in errors). Error
+		elif s.series_description.endswith('_M0'):
+			info[m0].append(s.series_id) 
+			#previously removed conversion of MZero to nifti. With previous versions of
+			#dcm2niix, the M0 would not convert correctly (one slice is deleted, resulting in errors). Error
 			#is reproduced across different studies using this M0 protocol- not fixed for now. MZero not
 			#used in processing so no conversion to nifti needed.
 		
@@ -178,6 +174,7 @@ def infotodict(seqinfo):
 			info[raw_asl].append(s.series_id)
 		elif s.series_description.endswith('_MeanPerf'):
 			info[mean_perf].append(s.series_id)
+
 		elif s.protocol_name.startswith('B0map') or "fmap_acq-magphase" in s.protocol_name:
 			if "P" in s.image_type:
 				info[fmap_phPA_baseline].append(s.series_id)
@@ -237,7 +234,7 @@ def infotodict(seqinfo):
 
 	return info
 
-#IntendedFor section does not work for heudiconv, only heudiconv-fw
+#IntendedFor section does not work for heudiconv, only fw-heudiconv
 IntendedFor = {
 
 	fmap_phPA_baseline: [
@@ -278,7 +275,7 @@ IntendedFor = {
 		'{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-PA_run-03_bold.nii.gz'],
 
 	m0: [
-		'{session}/asl/sub-{subject}_{session}_acq-spiralv20pf68accel1d_asl.nii.gz'],
+		'{session}/perf/sub-{subject}_{session}_task-rest_acq-spiralv20pf68accel1d_asl.nii.gz'],
 }
 
 #MetadataExtras does not work for heudiconv, only for heudiconv-fw
