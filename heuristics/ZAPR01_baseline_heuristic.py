@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Heuristic for mapping Oathes ZAPR01 Baseline scans into BIDS"""
+"""Heuristic for mapping OathesLab ZAPR01 Baseline scans into BIDS"""
 import os
 
 
@@ -75,11 +75,11 @@ dti = create_key(
 
 ## ASL Scans
 mean_perf = create_key(
-	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_acq-spiralv20pf68accel1d_DELTAM')
+	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_DELTAM')
 raw_asl = create_key(
-	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_acq-spiralv20pf68accel1d_asl')
+	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_asl')
 m0 = create_key(
-	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_acq-spiralv20pf68accel1d_MoScan')
+	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_MoScan')
 
 
 ## DSI
