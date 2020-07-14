@@ -75,11 +75,11 @@ dti = create_key(
 
 ## ASL Scans
 mean_perf = create_key(
-	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_DELTAM')
+	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_deltam')
 raw_asl = create_key(
 	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_asl')
 m0 = create_key(
-	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_MoScan')
+	'sub-{subject}/{session}/perf/sub-{subject}_{session}_task-rest_moscan')
 
 
 ## DSI
@@ -275,7 +275,7 @@ IntendedFor = {
 		'{session}/func/sub-{subject}_{session}_task-rest_acq-TR2s_dir-PA_run-03_bold.nii.gz'],
 
 	m0: [
-		'{session}/perf/sub-{subject}_{session}_task-rest_acq-spiralv20pf68accel1d_asl.nii.gz'],
+		'{session}/perf/sub-{subject}_{session}_task-rest_asl.nii.gz'],
 }
 
 #MetadataExtras does not work for heudiconv, only for heudiconv-fw
